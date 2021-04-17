@@ -6,13 +6,27 @@
   "bin": {
     "cli": "./bin/cli.js"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "run-s pretty-quick  lint-n-test-in-parallel"
+    }
+  },
   "scripts": {
+    "start": "",
+    "build": "npm run clean:some && tsc -p .",
+    "clean:some": "rm -rf ./lib",
+    "clean:all": "rm -rf ./node_modules ./package-lock.json ./lib",
+    "global": "npm i -g && cli",
+    "refresh": "npm run clean:all && npm i",
     "test": "jest --config ./jest.config.ts",
     "test:watch": "jest --watch --config ./jest.config.ts",
+    "tscov": "tscov --min-coverage 90",
+    "tscov:d": "tscov --details",
     "lint": "eslint -c ./.eslintrc.js . --ext ts",
-    "compile": "tsc",
     "pretty-quick": "pretty-quick --staged",
-    "lint-n-test-in-parallel": "run-p lint test"
+    "lint-n-test-in-parallel": "run-p lint test",
+    "publish-package": "npm run build && npm publish",
+    "docs": "typedoc --out docs ./src"
   },
   "author": "dszyszek",
   "license": "ISC",
@@ -63,10 +77,5 @@
       "project": "./tsconfig.json"
     }
   },
-  "prettier": "eslint-config-standard-typescript-prettier/prettier",
-  "husky": {
-    "hooks": {
-      "pre-commit": "run-s pretty-quick  lint-n-test-in-parallel"
-    }
-  }
+  "prettier": "eslint-config-standard-typescript-prettier/prettier"
 }
