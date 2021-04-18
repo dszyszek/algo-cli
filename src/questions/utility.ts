@@ -1,6 +1,3 @@
-// output directory question
-// file name question
-
 import inquirer from 'inquirer';
 import { FileOptions } from '../models/file';
 

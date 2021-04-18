@@ -1,5 +1,3 @@
-// Create algorithm action question
-
 import inquirer from 'inquirer';
 import { AlgorithmPossibleActions } from '../models/algorithm-actions';
 import { CompareAlgorithmsMain } from '../models/algorithm-compare';
