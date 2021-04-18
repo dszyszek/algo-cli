@@ -7,8 +7,8 @@ const figletify = (text: string): string =>
 
 export const displayBanner = (): void => {
   const transformedText = figletify(ConsoleMessage.TITLE);
-  const magentaTitle = cyan(transformedText);
-  const magentaBanner = cyan(ConsoleMessage.BANNER);
+  const magentaTitle = magenta(transformedText);
+  const magentaBanner = magenta(ConsoleMessage.BANNER);
 
   console.log(magentaTitle);
   console.log(magentaBanner);
