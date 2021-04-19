@@ -4,7 +4,7 @@
   "description": "",
   "main": "./lib/index.js",
   "bin": {
-    "cli": "./bin/cli.js"
+    "algo-cli": "./bin/algo-cli.js"
   },
   "husky": {
     "hooks": {
@@ -12,11 +12,11 @@
     }
   },
   "scripts": {
-    "start": "",
+    "start": "npm run build && npm run global",
     "build": "npm run clean:some && tsc -p .",
     "clean:some": "rm -rf ./lib",
     "clean:all": "rm -rf ./node_modules ./package-lock.json ./lib",
-    "global": "npm i -g && cli",
+    "global": "npm i -g && algo-cli",
     "refresh": "npm run clean:all && npm i",
     "test": "jest --config ./jest.config.ts",
     "test:watch": "jest --watch --config ./jest.config.ts",
@@ -32,7 +32,6 @@
   "license": "ISC",
   "dependencies": {
     "@types/fs-extra": "^9.0.11",
-    "@types/jest": "^26.0.22",
     "eslint-config-standard-typescript-prettier": "^4.2.0",
     "figlet": "^1.5.0",
     "fs-extra": "^9.1.0",
@@ -53,6 +52,7 @@
     "@liftr/tscov": "^2.0.0",
     "@types/figlet": "^1.5.0",
     "@types/inquirer": "^7.3.1",
+    "@types/jest": "^26.0.22",
     "@types/node": "^14.14.41",
     "@typescript-eslint/eslint-plugin": "^4.21.0",
     "@typescript-eslint/parser": "^4.21.0",

@@ -4,15 +4,13 @@
     "module": "commonjs",
     "lib": ["es6", "es2015", "dom"],
     "outDir": "./lib",
-    "rootDir": "./src",
     "importHelpers": true,
     "strict": true,
-    "types": ["node", "inquirer", "figlet", "fs-extra"],
+    "types": ["node", "inquirer", "figlet", "fs-extra", "jest"],
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    "forceConsistentCasingInFileNames": true
   },
   "exclude": ["node_modules", "lib", "templates"]
 }
