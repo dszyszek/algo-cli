@@ -4,7 +4,11 @@ import { CompareAlgorithmsMain } from '../models/algorithm-compare';
 import { MainOptions } from '../models/main-options';
 import { UtilityActionMain } from '../models/utility-actions';
 
-export async function mainOptionsQuestion(): Promise<MainOptions> {
+interface MainOptionsResponse {
+  main_options: AlgorithmPossibleActions;
+}
+
+export async function mainOptionsQuestion(): Promise<MainOptionsResponse> {
   const optionsList: MainOptions[] = [
     {
       name: 'Create algorithm',

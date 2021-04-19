@@ -1,9 +1,15 @@
 import inquirer from 'inquirer';
-import { FileOptions } from '../models/file';
+
+interface FileNameQuestionResponse {
+  file_name: string;
+}
+interface FilePathQuestionResponse {
+  file_path: string;
+}
 
 export async function fileNameQuestion(
   passedMessage?: string,
-): Promise<FileOptions> {
+): Promise<FileNameQuestionResponse> {
   const randomName: string = 'algo-' + Math.floor(Math.random() * 10000);
   const defaultMessage = 'Enter file name';
   let message = passedMessage ?? defaultMessage;
@@ -18,7 +24,7 @@ export async function fileNameQuestion(
 
 export async function filePathQuestion(
   passedMessage?: string,
-): Promise<FileOptions> {
+): Promise<FilePathQuestionResponse> {
   const defaultFilePath = './';
   const defaultMessage = 'Enter file path';
   let message = passedMessage ?? defaultMessage;
