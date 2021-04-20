@@ -6,6 +6,9 @@ interface FileNameQuestionResponse {
 interface FilePathQuestionResponse {
   file_path: string;
 }
+interface FileOverrideQuestionResponse {
+  file_override: boolean;
+}
 
 export async function fileNameQuestion(
   passedMessage?: string,
@@ -34,5 +37,20 @@ export async function filePathQuestion(
     type: 'input',
     message,
     default: defaultFilePath,
+  });
+}
+
+export async function fileOverrideQuestion(
+  passedMessage?: string,
+): Promise<FileOverrideQuestionResponse> {
+  const defaultAnswer = false;
+  const defaultMessage = 'File already exist, want to override?';
+  let message = passedMessage ?? defaultMessage;
+
+  return inquirer.prompt({
+    name: 'file_override',
+    type: 'confirm',
+    message,
+    default: defaultAnswer,
   });
 }
