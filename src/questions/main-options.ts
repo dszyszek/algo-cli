@@ -1,11 +1,11 @@
 import inquirer from 'inquirer';
 import { AlgorithmPossibleActions } from '../models/algorithm-actions';
 import { CompareAlgorithmsMain } from '../models/algorithm-compare';
-import { MainOptions } from '../models/main-options';
+import { MainOptions, MainOptionsTypes } from '../models/main-options';
 import { UtilityActionMain } from '../models/utility-actions';
 
 interface MainOptionsResponse {
-  main_options: AlgorithmPossibleActions;
+  main_options: MainOptionsTypes;
 }
 
 export async function mainOptionsQuestion(): Promise<MainOptionsResponse> {
