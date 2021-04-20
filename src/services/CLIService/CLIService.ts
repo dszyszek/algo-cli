@@ -6,16 +6,4 @@ export default class CLIService extends CLI {
     displayBanner();
     this.handleMainQuestions();
   };
-  public createAlgorithm = (): void => {
-    throw Error('method not implemented!');
-  };
-  public runAlgorithm = (): void => {
-    throw Error('method not implemented!');
-  };
-  public compareAlgorithm = (): void => {
-    throw Error('method not implemented!');
-  };
-  public generateRandomNumbers = (): void => {
-    throw Error('method not implemented!');
-  };
 }
