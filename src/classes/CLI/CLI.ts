@@ -17,4 +17,12 @@ export class CLI extends CLIAbstract {
   protected handleRunAlgorithm(): void {
     console.log('Handle run algorithm');
   }
+
+  protected handleAlgorithmCompare(): void {
+    console.log('Handle algorithm compare');
+  }
+
+  protected handleUtilityActions(): void {
+    console.log('Handle utility actions');
+  }
 }
