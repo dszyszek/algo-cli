@@ -1,11 +1,11 @@
 import {
-  AlgorithmAbstract,
   PassedAlgorithm,
   PassedAlgorithmExecutionResult,
   PassedAlgorithmArgs,
   AlgorithmState,
   AlgorithmResult,
-} from './AlgorithmAbstract';
+} from './types';
+import { AlgorithmAbstract } from './AlgorithmAbstract';
 
 export class Algorithm extends AlgorithmAbstract {
   private initialState: AlgorithmState = {
@@ -27,10 +27,6 @@ export class Algorithm extends AlgorithmAbstract {
   private get timeStamp(): number {
     // return current timestamp in miliseconds (from linux epoch)
     return new Date().getTime();
-  }
-
-  private get getState(): AlgorithmState {
-    return this.state;
   }
 
   private setState(state: AlgorithmState): void {
