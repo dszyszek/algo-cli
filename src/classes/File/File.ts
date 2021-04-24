@@ -4,14 +4,30 @@ import { checkIfExist, createFile } from '../../utils/fs';
 import newAlgorithmFileTemplate from '../../templates/new-algorithm-template';
 
 export class File {
-  private fileName: Promise<string> | string;
+  private fileName: Promise<string> | string = '';
   private filePath: Promise<string> | string;
 
-  constructor(passedFileName?: string, passedFilePath?: string) {
-    this.fileName = passedFileName ?? this.getNewFileName();
+  constructor(passedFilePath: string, passedFileName?: string) {
     this.filePath = passedFilePath ?? this.getFilePath();
-    this.init();
+
+    if (passedFileName) {
+      this.fileName = passedFileName;
+    }
   }
+
+  private createFileHandler = async (
+    filePath: string,
+    algorithmTemplate?: string,
+  ): Promise<void> => {
+    createFile(filePath, algorithmTemplate);
+    logSuccess('File generated!');
+  };
+
+  private getRawContent = (pathToFile: string): Promise<string> => {
+    return import(pathToFile).then((rawFile) => rawFile);
+  };
+
+  // TODO: below methods should go to FileService class
 
   private async getNewFileName(): Promise<string> {
     const file_name = await CLI.fileNameQuestion('Input name of the new file');
@@ -38,17 +54,23 @@ export class File {
     logInfo('File was not generated');
   };
 
-  private createFileHandler = async (
-    filePath: string,
-    algorithmTemplate?: string,
-  ): Promise<void> => {
-    createFile(filePath, algorithmTemplate);
-    logSuccess('File generated!');
+  public getContent = async (): Promise<string> => {
+    const { filePath } = this;
+    const fileName = !!this.fileName
+      ? this.fileName
+      : await this.getNewFileName();
+    const fullFilePath = `${filePath}/${fileName}`;
+
+    return this.getRawContent(fullFilePath);
   };
 
-  private init = async (): Promise<void> => {
-    const { fileName, filePath } = this;
-    const newFilePath = `${filePath}/${fileName}.ts`;
+  public create = async (): Promise<void> => {
+    const { filePath } = this;
+    const newFileName = !!this.fileName
+      ? this.fileName
+      : await this.getNewFileName();
+
+    const newFilePath = `${filePath}/${newFileName}.ts`;
 
     const fileExist = checkIfExist(newFilePath);
 
