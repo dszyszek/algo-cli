@@ -1,18 +1,4 @@
 import { red, green, cyan, magenta } from 'kleur';
-import figlet from 'figlet';
-import { ConsoleMessage } from '../models/console-message';
-
-const figletify = (text: string): string =>
-  figlet.textSync(text, { horizontalLayout: 'full' });
-
-export const displayBanner = (): void => {
-  const transformedText = figletify(ConsoleMessage.TITLE);
-  const magentaTitle = magenta(transformedText);
-  const magentaBanner = magenta(ConsoleMessage.BANNER);
-
-  console.log(magentaTitle);
-  console.log(magentaBanner);
-};
 
 export const logError = (message: string): void => {
   const redMessage = red(message);

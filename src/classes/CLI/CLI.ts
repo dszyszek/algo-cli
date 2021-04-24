@@ -1,28 +1,61 @@
 import { CLIAbstract } from './CLIAbstract';
-import { File } from '../File/File';
-import { fileNameQuestion, filePathQuestion } from '../../questions/utility';
+import { inquirerQuestion } from '../../questions/utility';
+import figlet from 'figlet';
+import { ConsoleMessage } from '../../models/console-message';
+import { magenta } from 'kleur';
 
 export class CLI extends CLIAbstract {
-  protected async handleCreateAlgorithm(): Promise<void> {
-    const { file_name } = await fileNameQuestion(
-      'Input name of the new algorithm file',
+  private figletify(text: string): string {
+    return figlet.textSync(text, { horizontalLayout: 'full' });
+  }
+
+  protected displayBanner = (): void => {
+    const transformedText = this.figletify(ConsoleMessage.TITLE);
+    const magentaTitle = magenta(transformedText);
+    const magentaBanner = magenta(ConsoleMessage.BANNER);
+
+    console.log(magentaTitle);
+    console.log(magentaBanner);
+  };
+
+  public static async fileNameQuestion(
+    passedMessage?: string,
+  ): Promise<string> {
+    const randomName: string = 'algo-' + Math.floor(Math.random() * 10000);
+    const defaultMessage = 'Enter file name';
+    let message = passedMessage ?? defaultMessage;
+
+    const { answer } = await inquirerQuestion<string>(
+      'input',
+      message,
+      randomName,
     );
-    const { file_path } = await filePathQuestion(
-      'Input path to the new algorithm file',
+    return answer;
+  }
+
+  public static async filePathQuestion(
+    passedMessage?: string,
+  ): Promise<string> {
+    const defaultFilePath = './';
+    const defaultMessage = 'Enter file path';
+    let message = passedMessage ?? defaultMessage;
+
+    const { answer } = await inquirerQuestion<string>(
+      'input',
+      message,
+      defaultFilePath,
     );
-
-    new File(file_name, file_path);
+    return answer;
   }
 
-  protected handleRunAlgorithm(): void {
-    console.log('Handle run algorithm');
-  }
+  public static async confirmQuestion(passedMessage: string): Promise<boolean> {
+    const defaultAnswer = false;
 
-  protected handleAlgorithmCompare(): void {
-    console.log('Handle algorithm compare');
-  }
-
-  protected handleUtilityActions(): void {
-    console.log('Handle utility actions');
+    const { answer } = await inquirerQuestion<boolean>(
+      'confirm',
+      passedMessage,
+      defaultAnswer,
+    );
+    return answer;
   }
 }
