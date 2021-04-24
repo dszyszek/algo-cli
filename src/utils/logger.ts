@@ -14,3 +14,7 @@ export const logInfo = (message: string): void => {
   const cyanMessage = cyan(message);
   console.error(cyanMessage);
 };
+
+export const logBreak = (): void => {
+  console.log('\n========================================\n');
+};
