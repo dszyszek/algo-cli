@@ -18,32 +18,15 @@ export class CLI extends CLIAbstract {
     console.log(magentaBanner);
   };
 
-  public static async fileNameQuestion(
-    passedMessage?: string,
+  public static async inputQuestion(
+    passedMessage: string,
+    passedDefault?: string,
   ): Promise<string> {
-    const randomName: string = 'algo-' + Math.floor(Math.random() * 10000);
-    const defaultMessage = 'Enter file name';
-    let message = passedMessage ?? defaultMessage;
-
+    const defaultAnswer = passedDefault ?? '';
     const { answer } = await inquirerQuestion<string>(
       'input',
-      message,
-      randomName,
-    );
-    return answer;
-  }
-
-  public static async filePathQuestion(
-    passedMessage?: string,
-  ): Promise<string> {
-    const defaultFilePath = './';
-    const defaultMessage = 'Enter file path';
-    let message = passedMessage ?? defaultMessage;
-
-    const { answer } = await inquirerQuestion<string>(
-      'input',
-      message,
-      defaultFilePath,
+      passedMessage,
+      defaultAnswer,
     );
     return answer;
   }
@@ -57,5 +40,27 @@ export class CLI extends CLIAbstract {
       defaultAnswer,
     );
     return answer;
+  }
+
+  public static async fileNameQuestion(
+    passedMessage?: string,
+  ): Promise<string> {
+    const randomName: string = 'algo-' + Math.floor(Math.random() * 10000);
+    const defaultMessage = 'Enter file name';
+    let message = passedMessage ?? defaultMessage;
+
+    const fileNameAnswer = await CLI.inputQuestion(message, randomName);
+    return fileNameAnswer;
+  }
+
+  public static async filePathQuestion(
+    passedMessage?: string,
+  ): Promise<string> {
+    const defaultFilePath = './';
+    const defaultMessage = 'Enter file path';
+    let message = passedMessage ?? defaultMessage;
+
+    const pathAnswer = await CLI.inputQuestion(message, defaultFilePath);
+    return pathAnswer;
   }
 }
