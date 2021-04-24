@@ -41,13 +41,16 @@ export default class CLIService extends CLI {
 
   private async handleRunAlgorithm(): Promise<void> {
     let algorithmPayload: number[];
-    // get algo file name
+
+    // get algorithm
     const file_path = await CLI.filePathQuestion(
       'Input path to the algorithm file',
     );
+    const algorithm: Function = await import(file_path);
     // ask for payload (file or input array)
     const { algorithm_payload_options } = await algorithmPayloadQuestion();
 
+    // get algo payload
     switch (algorithm_payload_options) {
       case AlgorithmPayloadAvailableOptions.FROM_FILE:
         const path_to_file = await CLI.filePathQuestion('Input path to file');
@@ -63,12 +66,11 @@ export default class CLIService extends CLI {
         break;
     }
 
-    // run AlgorithmService.execute
+    // run algorithm
 
-    // const algorithmService = new AlgorithmService();
-    // algorithmService.execute();
-
-    console.log('Handle run algorithm');
+    const algorithmService = new AlgorithmService(algorithm, algorithmPayload);
+    algorithmService.execute();
+    algorithmService.display();
   }
 
   private handleAlgorithmCompare(): void {
