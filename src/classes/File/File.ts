@@ -1,9 +1,5 @@
 import { logSuccess, logError, logInfo } from '../../utils/logger';
-import {
-  fileNameQuestion,
-  filePathQuestion,
-  fileOverrideQuestion,
-} from '../../questions/utility';
+import { CLI } from '../CLI/CLI';
 import { checkIfExist, createFile } from '../../utils/fs';
 import newAlgorithmFileTemplate from '../../templates/new-algorithm-template';
 
@@ -18,12 +14,12 @@ export class File {
   }
 
   private async getNewFileName(): Promise<string> {
-    const file_name = await fileNameQuestion('Input name of the new file');
+    const file_name = await CLI.fileNameQuestion('Input name of the new file');
     return file_name;
   }
 
   private async getFilePath(): Promise<string> {
-    const file_path = await filePathQuestion('Input path to the new file');
+    const file_path = await CLI.filePathQuestion('Input path to the new file');
     return file_path;
   }
 
@@ -31,7 +27,9 @@ export class File {
     filePath: string,
     algorithmTemplate?: string,
   ): Promise<void> => {
-    const file_override = await fileOverrideQuestion();
+    const file_override = await CLI.confirmQuestion(
+      'File already exist, want to override?',
+    );
     if (file_override) {
       this.createFileHandler(filePath, algorithmTemplate);
       return;
