@@ -18,12 +18,12 @@ export class File {
   }
 
   private async getNewFileName(): Promise<string> {
-    const { file_name } = await fileNameQuestion('Input name of the new file');
+    const file_name = await fileNameQuestion('Input name of the new file');
     return file_name;
   }
 
   private async getFilePath(): Promise<string> {
-    const { file_path } = await filePathQuestion('Input path to the new file');
+    const file_path = await filePathQuestion('Input path to the new file');
     return file_path;
   }
 
@@ -31,7 +31,7 @@ export class File {
     filePath: string,
     algorithmTemplate?: string,
   ): Promise<void> => {
-    const { file_override } = await fileOverrideQuestion();
+    const file_override = await fileOverrideQuestion();
     if (file_override) {
       this.createFileHandler(filePath, algorithmTemplate);
       return;

@@ -1,56 +1,65 @@
 import inquirer from 'inquirer';
 
-interface FileNameQuestionResponse {
-  file_name: string;
+type InquirerType = 'input' | 'confirm';
+type InquirerDefaultValueType = string | boolean;
+interface InputQuestionResponse<T> {
+  answer: T;
 }
-interface FilePathQuestionResponse {
-  file_path: string;
-}
-interface FileOverrideQuestionResponse {
-  file_override: boolean;
+
+async function inquirerQuestion<T>(
+  type: InquirerType,
+  passedMessage: string,
+  defaultValue: InquirerDefaultValueType,
+): Promise<InputQuestionResponse<T>> {
+  return inquirer.prompt({
+    name: 'answer',
+    type,
+    message: passedMessage,
+    default: defaultValue,
+  });
 }
 
 export async function fileNameQuestion(
   passedMessage?: string,
-): Promise<FileNameQuestionResponse> {
+): Promise<string> {
   const randomName: string = 'algo-' + Math.floor(Math.random() * 10000);
   const defaultMessage = 'Enter file name';
   let message = passedMessage ?? defaultMessage;
 
-  return inquirer.prompt({
-    name: 'file_name',
-    type: 'input',
+  const { answer } = await inquirerQuestion<string>(
+    'input',
     message,
-    default: randomName,
-  });
+    randomName,
+  );
+  return answer;
 }
 
 export async function filePathQuestion(
   passedMessage?: string,
-): Promise<FilePathQuestionResponse> {
+): Promise<string> {
   const defaultFilePath = './';
   const defaultMessage = 'Enter file path';
   let message = passedMessage ?? defaultMessage;
 
-  return inquirer.prompt({
-    name: 'file_path',
-    type: 'input',
+  const { answer } = await inquirerQuestion<string>(
+    'input',
     message,
-    default: defaultFilePath,
-  });
+    defaultFilePath,
+  );
+  return answer;
 }
 
 export async function fileOverrideQuestion(
   passedMessage?: string,
-): Promise<FileOverrideQuestionResponse> {
+): Promise<boolean> {
   const defaultAnswer = false;
   const defaultMessage = 'File already exist, want to override?';
   let message = passedMessage ?? defaultMessage;
 
-  return inquirer.prompt({
-    name: 'file_override',
-    type: 'confirm',
+  const { answer } = await inquirerQuestion<boolean>(
+    'confirm',
     message,
-    default: defaultAnswer,
-  });
+    defaultAnswer,
+  );
+  return answer;
 }
