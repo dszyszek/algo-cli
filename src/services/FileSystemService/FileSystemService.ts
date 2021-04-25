@@ -1,12 +1,10 @@
-import { FileSystem } from '../../classes/FileSystem/FileSystem';
+import {
+  FileSystem,
+  ValidatedFilePath,
+} from '../../classes/FileSystem/FileSystem';
 import { CLI } from '../../classes/CLI/CLI';
 import { logSuccess, logError, logInfo } from '../../utils/logger';
 import newAlgorithmFileTemplate from '../../templates/new-algorithm-template';
-
-interface ValidatedFilePath {
-  fileName: string;
-  filePath: string;
-}
 
 export class FileSystemService extends FileSystem {
   private currentFileName: string = '';
@@ -43,23 +41,6 @@ export class FileSystemService extends FileSystem {
 
   public get filePath() {
     return this.currentFilePath;
-  }
-
-  private validateFilePath(passedFilePath: string): ValidatedFilePath {
-    let filePath: string;
-    let fileName: string = '';
-    const filePathSplit = passedFilePath.split('/');
-    const lastElementOfFilePath = filePathSplit[filePathSplit.length - 1];
-    const indexOfDot = lastElementOfFilePath.indexOf('.');
-    if (indexOfDot > -1) {
-      fileName = filePathSplit[filePathSplit.length - 1];
-    }
-    filePath = filePathSplit.slice(0, filePathSplit.length - 1).join('/');
-
-    return {
-      fileName,
-      filePath,
-    };
   }
 
   private async getFileName(): Promise<string> {

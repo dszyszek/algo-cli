@@ -1,5 +1,10 @@
 import fs from 'fs-extra';
 
+export interface ValidatedFilePath {
+  fileName: string;
+  filePath: string;
+}
+
 export class FileSystem {
   protected importFile = (pathToFile: string): Promise<Function> => {
     return import(pathToFile).then((rawFile) => rawFile.default);
@@ -27,4 +32,21 @@ export class FileSystem {
     fs.writeFileSync(path, content);
 
   protected mkdir = (path: string): void => fs.mkdirSync(path);
+
+  protected validateFilePath(passedFilePath: string): ValidatedFilePath {
+    let filePath: string;
+    let fileName: string = '';
+    const filePathSplit = passedFilePath.split('/');
+    const lastElementOfFilePath = filePathSplit[filePathSplit.length - 1];
+    const indexOfDot = lastElementOfFilePath.indexOf('.');
+    if (indexOfDot > -1) {
+      fileName = filePathSplit[filePathSplit.length - 1];
+    }
+    filePath = filePathSplit.slice(0, filePathSplit.length - 1).join('/');
+
+    return {
+      fileName,
+      filePath,
+    };
+  }
 }
