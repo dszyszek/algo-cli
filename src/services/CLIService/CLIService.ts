@@ -25,6 +25,7 @@ export default class CLIService extends CLI {
         break;
       case UtilityActionMain.UTILITY_ACTIONS:
         this.handleUtilityActions();
+        break;
     }
   }
 
@@ -46,7 +47,13 @@ export default class CLIService extends CLI {
     const file_path = await CLI.filePathQuestion(
       'Input path to the algorithm file',
     );
-    const algorithm: Function = await import(file_path);
+    const algorithm: Function | null = await new FileSystemService(
+      file_path,
+    ).importFromFile();
+
+    if (!algorithm) {
+      return;
+    }
     // ask for payload (file or input array)
     const { algorithm_payload_options } = await algorithmPayloadQuestion();
 
@@ -56,6 +63,10 @@ export default class CLIService extends CLI {
         const path_to_file = await CLI.filePathQuestion('Input path to file');
         const fileClass = new FileSystemService(path_to_file);
         const rawFileContent = await fileClass.getContent();
+
+        if (!rawFileContent) {
+          return;
+        }
         algorithmPayload = parseToIntArray(rawFileContent);
         break;
       case AlgorithmPayloadAvailableOptions.YOURSELF:
