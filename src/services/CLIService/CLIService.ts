@@ -4,7 +4,7 @@ import { AlgorithmPossibleActions } from '../../models/algorithm-actions';
 import { CompareAlgorithmsMain } from '../../models/algorithm-compare';
 import { UtilityActionMain } from '../../models/utility-actions';
 import { AlgorithmPayloadAvailableOptions } from '../../models/algorithm-payload-options';
-import { File } from '../../classes/File/File';
+import { FileSystemService } from '../../services/FileSystemService/FileSystemService';
 import { algorithmPayloadQuestion } from '../../questions/algorithm-payload-options';
 import { AlgorithmService } from '../AlgorithmService/AlgorithmService';
 import { parseToIntArray } from '../../utils/number';
@@ -36,7 +36,7 @@ export default class CLIService extends CLI {
       'Input path to the new algorithm file',
     );
 
-    new File(file_path, file_name).create();
+    new FileSystemService(file_path, file_name).create();
   }
 
   private async handleRunAlgorithm(): Promise<void> {
@@ -54,7 +54,7 @@ export default class CLIService extends CLI {
     switch (algorithm_payload_options) {
       case AlgorithmPayloadAvailableOptions.FROM_FILE:
         const path_to_file = await CLI.filePathQuestion('Input path to file');
-        const fileClass = new File(path_to_file);
+        const fileClass = new FileSystemService(path_to_file);
         const rawFileContent = await fileClass.getContent();
         algorithmPayload = parseToIntArray(rawFileContent);
         break;

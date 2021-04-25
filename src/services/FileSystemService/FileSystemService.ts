@@ -1,33 +1,20 @@
+import { FileSystem } from '../../classes/FileSystem/FileSystem';
+import { CLI } from '../../classes/CLI/CLI';
 import { logSuccess, logError, logInfo } from '../../utils/logger';
-import { CLI } from '../CLI/CLI';
-import { checkIfExist, createFile } from '../../utils/fs';
 import newAlgorithmFileTemplate from '../../templates/new-algorithm-template';
 
-export class File {
+export class FileSystemService extends FileSystem {
   private fileName: Promise<string> | string = '';
   private filePath: Promise<string> | string;
 
   constructor(passedFilePath: string, passedFileName?: string) {
+    super();
     this.filePath = passedFilePath ?? this.getFilePath();
 
     if (passedFileName) {
       this.fileName = passedFileName;
     }
   }
-
-  private createFileHandler = async (
-    filePath: string,
-    algorithmTemplate?: string,
-  ): Promise<void> => {
-    createFile(filePath, algorithmTemplate);
-    logSuccess('File generated!');
-  };
-
-  private getRawContent = (pathToFile: string): Promise<string> => {
-    return import(pathToFile).then((rawFile) => rawFile);
-  };
-
-  // TODO: below methods should go to FileService class
 
   private async getNewFileName(): Promise<string> {
     const file_name = await CLI.fileNameQuestion('Input name of the new file');
@@ -38,6 +25,14 @@ export class File {
     const file_path = await CLI.filePathQuestion('Input path to the new file');
     return file_path;
   }
+
+  private createFileHandler = async (
+    filePath: string,
+    algorithmTemplate?: string,
+  ): Promise<void> => {
+    this.createFile(filePath, algorithmTemplate);
+    logSuccess('File generated!');
+  };
 
   private overrideFileHandler = async (
     filePath: string,
@@ -72,7 +67,7 @@ export class File {
 
     const newFilePath = `${filePath}/${newFileName}.ts`;
 
-    const fileExist = checkIfExist(newFilePath);
+    const fileExist = this.checkIfExist(newFilePath);
 
     if (!fileExist) {
       this.createFileHandler(newFilePath, newAlgorithmFileTemplate);
