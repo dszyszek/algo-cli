@@ -1,14 +1,30 @@
 import fs from 'fs-extra';
 
 export class FileSystem {
-  public getRawContent = (pathToFile: string): Promise<string> => {
-    return import(pathToFile).then((rawFile) => rawFile);
+  protected importFile = (pathToFile: string): Promise<Function> => {
+    return import(pathToFile).then((rawFile) => rawFile.default);
   };
 
-  public checkIfExist = (path: string): boolean => fs.existsSync(path);
+  protected getRawFile(
+    pathToFile: string,
+    encoding: string = 'utf8',
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      fs.readFile(pathToFile, encoding, (error, data) => {
+        if (error) {
+          console.error(error.message);
+          reject();
+        }
 
-  public createFile = (path: string, content: string = ''): void =>
+        resolve(data);
+      });
+    });
+  }
+
+  protected checkIfExist = (path: string): boolean => fs.existsSync(path);
+
+  protected createFile = (path: string, content: string = ''): void =>
     fs.writeFileSync(path, content);
 
-  public mkdir = (path: string): void => fs.mkdirSync(path);
+  protected mkdir = (path: string): void => fs.mkdirSync(path);
 }
