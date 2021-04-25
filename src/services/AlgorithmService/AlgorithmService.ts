@@ -17,7 +17,7 @@ export class AlgorithmService extends Algorithm {
     logBreak();
     console.log('Result');
     logBreak();
-    logSuccess('Time: ' + this.result?.state.time);
+    logSuccess(`Time: ${this.result?.state.time}ms`);
     logSuccess('Algorithm output: ' + this.result?.result);
   }
 
