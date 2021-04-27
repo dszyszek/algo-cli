@@ -1,36 +1,95 @@
 import { Algorithm } from '../../classes/Algorithm';
-import { AlgorithmResult } from '../../classes/Algorithm/types';
+import {
+  AlgorithmResult,
+  AlgorithmType,
+  AllAlgorithmsResult,
+} from '../../classes/Algorithm/types';
 import { logBreak, logSuccess, logError } from '../../utils/logger';
+import isEqual from 'lodash/isEqual';
 
-export class AlgorithmService extends Algorithm {
+export class AlgorithmService {
   private payload: unknown[];
-  private result: AlgorithmResult | null = null;
+  private results: AllAlgorithmsResult[] | null = null;
+  private algorithms: AlgorithmType[] = [];
 
-  constructor(algorithm: Function, algorithmPayload: unknown[]) {
-    super(algorithm);
+  constructor(algorithmPayload: unknown[], ...args: AlgorithmType[]) {
     this.payload = algorithmPayload;
+    this.algorithms = args;
   }
 
   private validatePath(path: string) {}
 
-  private displayResult(): void {
+  private displayResultHead(): void {
     logBreak();
     console.log('Result');
     logBreak();
-    logSuccess(`Time: ${this.result?.state.time}ms`);
-    logSuccess('Algorithm output: ' + this.result?.result);
+  }
+  private displayResultBody(singleResult: AllAlgorithmsResult): void {
+    logBreak();
+    console.log(`Algorithm name: ${singleResult.name}`);
+    logSuccess(`Time: ${singleResult.result.state.time}ms`);
+  }
+  private displayResultFooter(singleResult: AllAlgorithmsResult): void {
+    logBreak();
+    // TODO: ask if user wants to see the result
+    logSuccess('Algorithm output: ' + singleResult.result.result);
+    logBreak();
+  }
+
+  private checkIfResultsAreTheSame(results: AllAlgorithmsResult[]): boolean {
+    if (!results) {
+      return false;
+    }
+    const first = results[0].result.result;
+
+    return results.every((result) => isEqual(result.result.result, first));
   }
 
   public display(): void {
-    if (!this.result) {
-      logError('You have to execute algorithm first!');
+    if (!this.results) {
+      logError('You have to execute algorithms first!');
       return;
     }
-    this.displayResult();
+    this.displayResultHead();
+    this.results.forEach((singleResult: AllAlgorithmsResult) => {
+      this.displayResultBody(singleResult);
+    });
+    this.displayResultFooter(this.results[0]);
   }
 
   public execute(): void {
-    const result = this.run(this.payload);
-    this.result = result;
+    const algorithmsResults: AllAlgorithmsResult[] = this.algorithms.map(
+      (algo: AlgorithmType) => {
+        const algorithmInstance = new Algorithm(algo.algo);
+        const resultOfSingleRun = algorithmInstance.run(this.payload);
+
+        return {
+          ...algo,
+          result: resultOfSingleRun,
+        };
+      },
+    );
+
+    const resultsAreTheSame: boolean = this.checkIfResultsAreTheSame(
+      algorithmsResults,
+    );
+
+    if (!resultsAreTheSame) {
+      logError(
+        'Outpus of algorithms are not the same - you need to check the implementations!',
+      );
+      return;
+    }
+
+    this.results = algorithmsResults;
+  }
+
+  public compare(): void {
+    if (!this.results) {
+      logError('You have to execute algorithms first!');
+      return;
+    }
+
+    throw Error('Not implemented yet!');
   }
 }
