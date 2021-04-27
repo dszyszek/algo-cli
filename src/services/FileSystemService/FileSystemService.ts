@@ -90,10 +90,13 @@ export class FileSystemService extends FileSystem {
     logInfo('File was not generated');
   };
 
-  private validateFileBeforeImport(pathToFile: string): boolean {
+  private validateFileBeforeImport(
+    pathToFile: string,
+    fileName: string,
+  ): boolean {
     const fileExist = this.checkIfExist(pathToFile);
     if (!fileExist) {
-      logError("Cannot import - file doesn't exist");
+      logError(`Cannot import - file "${fileName}" doesn't exist`);
       return false;
     }
 
@@ -104,7 +107,7 @@ export class FileSystemService extends FileSystem {
     const filePath = await this.getFilePath();
     const fileName = await this.getFileName();
     const fullFilePath = `${filePath}/${fileName}`;
-    const isValid = this.validateFileBeforeImport(fullFilePath);
+    const isValid = this.validateFileBeforeImport(fullFilePath, fileName);
 
     if (isValid) {
       return this.getRawFile(fullFilePath);
@@ -117,7 +120,7 @@ export class FileSystemService extends FileSystem {
     const filePath = await this.getFilePath();
     const fileName = await this.getFileName();
     const fullFilePath = `${filePath}/${fileName}`;
-    const isValid = this.validateFileBeforeImport(fullFilePath);
+    const isValid = this.validateFileBeforeImport(fullFilePath, fileName);
 
     if (isValid) {
       return this.importFile(fullFilePath);
