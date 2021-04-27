@@ -13,3 +13,12 @@ export interface AlgorithmResult {
 export interface IAlgorithmAbstract {
   run: (args: PassedAlgorithmArgs) => AlgorithmResult;
 }
+
+export interface AlgorithmType {
+  algo: Function;
+  name: string;
+}
+
+export interface AllAlgorithmsResult extends AlgorithmType {
+  result: AlgorithmResult;
+}
