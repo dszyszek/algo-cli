@@ -8,6 +8,10 @@ import { FileSystemService } from '../../services/FileSystemService/FileSystemSe
 import { algorithmPayloadQuestion } from '../../questions/algorithm-payload-options';
 import { AlgorithmService } from '../AlgorithmService/AlgorithmService';
 import { parseToIntArray } from '../../utils/number';
+import { algorithmComparePayloadQuestion } from '../../questions/compare-algorithms';
+import { CompareAlborithmsBy } from '../../models/algorithm-compare';
+import { AlgorithmType } from '../../classes/Algorithm/types';
+import { logError } from '../../utils/logger';
 
 export default class CLIService extends CLI {
   private async handleMainQuestions(): Promise<void> {
@@ -40,32 +44,18 @@ export default class CLIService extends CLI {
     new FileSystemService(file_path, file_name).create();
   }
 
-  private async handleRunAlgorithm(): Promise<void> {
+  private async handleAlgorithmPayload(
+    algorithmOptions: AlgorithmPayloadAvailableOptions,
+  ): Promise<number[] | null> {
     let algorithmPayload: number[];
-
-    // get algorithm
-    const file_path = await CLI.filePathQuestion(
-      'Input path to the algorithm file',
-    );
-    const algorithm: Function | null = await new FileSystemService(
-      file_path,
-    ).importFromFile();
-
-    if (!algorithm) {
-      return;
-    }
-    // ask for payload (file or input array)
-    const { algorithm_payload_options } = await algorithmPayloadQuestion();
-
-    // get algo payload
-    switch (algorithm_payload_options) {
+    switch (algorithmOptions) {
       case AlgorithmPayloadAvailableOptions.FROM_FILE:
         const path_to_file = await CLI.filePathQuestion('Input path to file');
         const fileClass = new FileSystemService(path_to_file);
         const rawFileContent = await fileClass.getContent();
 
         if (!rawFileContent) {
-          return;
+          return null;
         }
         algorithmPayload = parseToIntArray(rawFileContent);
         break;
@@ -73,19 +63,111 @@ export default class CLIService extends CLI {
         const rawNumbers = await CLI.inputQuestion(
           'Input numbers list (comma separated!)',
         );
+
+        if (!rawNumbers) {
+          return null;
+        }
+
         algorithmPayload = parseToIntArray(rawNumbers);
         break;
     }
 
+    return algorithmPayload;
+  }
+
+  private async handleRunAlgorithm(): Promise<void> {
+    let algorithmPayload: number[];
+    let readyAlgorithm: AlgorithmType = {
+      algo: new Function(),
+      name: '',
+    };
+
+    // get algorithm
+    const file_path = await CLI.filePathQuestion(
+      'Input path to the algorithm file',
+    );
+    const algorithmFSService: FileSystemService = new FileSystemService(
+      file_path,
+    );
+    const algorithm: Function | null = await algorithmFSService.importFromFile();
+    const algorithmName = algorithmFSService.fileName;
+
+    if (!algorithm) {
+      return;
+    }
+
+    readyAlgorithm.algo = algorithm;
+    readyAlgorithm.name = algorithmName;
+
+    // ask for payload (file or input array)
+    const { algorithm_payload_options } = await algorithmPayloadQuestion();
+
+    // get algo payload
+    const payload = await this.handleAlgorithmPayload(
+      algorithm_payload_options,
+    );
+    if (!payload) {
+      return;
+    }
+    algorithmPayload = payload;
     // run algorithm
 
-    const algorithmService = new AlgorithmService(algorithm, algorithmPayload);
+    const algorithmService = new AlgorithmService(
+      algorithmPayload,
+      readyAlgorithm,
+    );
     algorithmService.execute();
     algorithmService.display();
   }
 
-  private handleAlgorithmCompare(): void {
-    console.log('Handle algorithm compare');
+  private async handleAlgorithmCompare(): Promise<void> {
+    const {
+      algorithm_compare_payload,
+    } = await algorithmComparePayloadQuestion();
+
+    switch (algorithm_compare_payload) {
+      case CompareAlborithmsBy.COMPARE_BY_PERFORMANCE:
+        let algorithmPayload: number[];
+        const algorithms: AlgorithmType[] = [];
+
+        const { algorithm_payload_options } = await algorithmPayloadQuestion();
+
+        const payload = await this.handleAlgorithmPayload(
+          algorithm_payload_options,
+        );
+        if (!payload) {
+          return;
+        }
+        algorithmPayload = payload;
+
+        const pathsToFilesRaw = await CLI.filePathQuestion(
+          'Input paths to algorithm files (comma separated)',
+        );
+        const pathsToFiles = pathsToFilesRaw.split(',');
+        const FSService = new FileSystemService();
+
+        for (let i = 0; i < pathsToFiles.length; i++) {
+          FSService.filePath = pathsToFiles[i];
+          const algo = await FSService.importFromFile();
+
+          if (!algo) {
+            return;
+          }
+
+          const name = FSService.fileName;
+          algorithms.push({
+            algo,
+            name,
+          });
+        }
+
+        const algorithmService: AlgorithmService = new AlgorithmService(
+          algorithmPayload,
+          ...algorithms,
+        );
+        algorithmService.execute();
+        algorithmService.display();
+    }
   }
 
   private handleUtilityActions(): void {
