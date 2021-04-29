@@ -1,4 +1,5 @@
 import { CLI } from '../../classes/CLI';
+import { ICLI } from '../../classes/CLI/types';
 import { mainOptionsQuestion } from '../../questions/main-options';
 import { AlgorithmPossibleActions } from '../../models/algorithm-actions';
 import { CompareAlgorithmsMain } from '../../models/algorithm-compare';
@@ -11,9 +12,14 @@ import { parseToIntArray } from '../../utils/number';
 import { algorithmComparePayloadQuestion } from '../../questions/compare-algorithms';
 import { CompareAlborithmsBy } from '../../models/algorithm-compare';
 import { AlgorithmType } from '../../classes/Algorithm/types';
-import { logError } from '../../utils/logger';
 
-export default class CLIService extends CLI {
+export default class CLIService {
+  private cliInstance: ICLI;
+
+  constructor() {
+    this.cliInstance = new CLI();
+  }
+
   private async handleMainQuestions(): Promise<void> {
     const { main_options } = await mainOptionsQuestion();
 
@@ -175,7 +181,7 @@ export default class CLIService extends CLI {
   }
 
   public start = (): void => {
-    this.displayBanner();
+    this.cliInstance.displayBanner();
     this.handleMainQuestions();
   };
 }
