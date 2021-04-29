@@ -1,15 +1,15 @@
-import { CLIAbstract } from './CLIAbstract';
+import { ICLI } from './types';
 import { inquirerQuestion } from '../../questions/utility';
 import figlet from 'figlet';
 import { ConsoleMessage } from '../../models/console-message';
 import { magenta } from 'kleur';
 
-export class CLI extends CLIAbstract {
+export class CLI implements ICLI {
   private figletify(text: string): string {
     return figlet.textSync(text, { horizontalLayout: 'full' });
   }
 
-  protected displayBanner = (): void => {
+  public displayBanner = (): void => {
     const transformedText = this.figletify(ConsoleMessage.TITLE);
     const magentaTitle = magenta(transformedText);
     const magentaBanner = magenta(ConsoleMessage.BANNER);
