@@ -12,6 +12,8 @@ import { parseToIntArray } from '../../utils/number';
 import { algorithmComparePayloadQuestion } from '../../questions/compare-algorithms';
 import { CompareAlborithmsBy } from '../../models/algorithm-compare';
 import { AlgorithmType } from '../../classes/Algorithm/types';
+import { logError } from '../../utils/logger';
+import { UtilityService } from '../UtilityService/UtilityService';
 
 export default class CLIService {
   private cliInstance: ICLI;
@@ -176,8 +178,26 @@ export default class CLIService {
     }
   }
 
-  private handleUtilityActions(): void {
-    console.log('Handle utility actions');
+  private async handleUtilityActions(): Promise<void> {
+    const quantityRaw: string = await CLI.inputQuestion(
+      'How many random numbers do you want?',
+    );
+    const qyantityParsed = parseInt(quantityRaw);
+
+    if (qyantityParsed === NaN) {
+      logError('You must input a number!');
+      return;
+    }
+    const utilityServiceInstance = new UtilityService();
+    const randomNumbers: number[] = utilityServiceInstance.generateRandomNumbers(
+      qyantityParsed,
+    );
+    const randomNumbersStringified: string = randomNumbers.join(',');
+    const newFilePath = await CLI.filePathQuestion(
+      'Input path to the new file',
+    );
+    const fileSystemServiceInstance = new FileSystemService(newFilePath);
+    fileSystemServiceInstance.create(randomNumbersStringified, 'csv');
   }
 
   public start = (): void => {
