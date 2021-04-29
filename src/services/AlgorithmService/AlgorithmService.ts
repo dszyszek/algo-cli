@@ -25,15 +25,14 @@ export class AlgorithmService {
     logBreak();
   }
   private displayResultBody(singleResult: AllAlgorithmsResult): void {
-    logBreak();
-    console.log(`Algorithm name: ${singleResult.name}`);
-    logSuccess(`Time: ${singleResult.result.state.time}ms`);
+    // TODO: ask if user wants to see the result
+    console.log('Algorithm output: ');
+    logSuccess(`${singleResult.result.result}`);
   }
   private displayResultFooter(singleResult: AllAlgorithmsResult): void {
     logBreak();
-    // TODO: ask if user wants to see the result
-    logSuccess('Algorithm output: ' + singleResult.result.result);
-    logBreak();
+    console.log(`Algorithm name: ${singleResult.name}`);
+    logSuccess(`Time: ${singleResult.result.state.time}ms`);
   }
 
   private checkIfResultsAreTheSame(results: AllAlgorithmsResult[]): boolean {
@@ -51,10 +50,12 @@ export class AlgorithmService {
       return;
     }
     this.displayResultHead();
+    this.displayResultBody(this.results[0]);
+
     this.results.forEach((singleResult: AllAlgorithmsResult) => {
-      this.displayResultBody(singleResult);
+      this.displayResultFooter(singleResult);
     });
-    this.displayResultFooter(this.results[0]);
+    logBreak();
   }
 
   public execute(): void {
