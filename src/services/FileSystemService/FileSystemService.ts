@@ -29,7 +29,8 @@ export class FileSystemService {
       fileName,
       filePath,
     }: ValidatedFilePath = FileSystem.validateFilePath(passedFilePath);
-    this.currentFilePath = filePath;
+    const pathNormalized = FileSystem.normalizePath(filePath);
+    this.currentFilePath = pathNormalized;
     if (!!fileName) {
       this.fileName = fileName;
     }
