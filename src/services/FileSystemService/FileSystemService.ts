@@ -95,8 +95,15 @@ export class FileSystemService extends FileSystem {
     fileName: string,
   ): boolean {
     const fileExist = this.checkIfExist(pathToFile);
+
     if (!fileExist) {
       logError(`Cannot import - file "${fileName}" doesn't exist`);
+      return false;
+    }
+
+    const checkIfDirectory = this.checkIfDirectory(pathToFile);
+    if (checkIfDirectory) {
+      logError(`Cannot import directory!`);
       return false;
     }
 
