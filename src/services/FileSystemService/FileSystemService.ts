@@ -70,21 +70,21 @@ export class FileSystemService {
 
   private createFileHandler = async (
     filePath: string,
-    algorithmTemplate?: string,
+    content: string = '',
   ): Promise<void> => {
-    FileSystem.createFile(filePath, algorithmTemplate);
-    logSuccess('File generated!');
+    FileSystem.createFile(filePath, content);
+    logSuccess(`File generated at ${filePath}!`);
   };
 
   private overrideFileHandler = async (
     filePath: string,
-    algorithmTemplate?: string,
+    content: string = '',
   ): Promise<void> => {
     const file_override = await CLI.confirmQuestion(
       'File already exist, want to override?',
     );
     if (file_override) {
-      this.createFileHandler(filePath, algorithmTemplate);
+      this.createFileHandler(filePath, content);
       return;
     }
 
@@ -137,17 +137,22 @@ export class FileSystemService {
     return null;
   };
 
-  public create = async (): Promise<void> => {
+  public create = async (
+    content: string = newAlgorithmFileTemplate,
+    extension: string = 'ts',
+  ): Promise<string> => {
     const filePath = await this.getFilePath();
     const newFileName = await this.getFileName();
-    const newFilePath = `${filePath}/${newFileName}.ts`;
+    const newFilePath = `${filePath}/${newFileName}.${extension}`;
 
     const fileExist = FileSystem.checkIfExist(newFilePath);
 
     if (!fileExist) {
-      this.createFileHandler(newFilePath, newAlgorithmFileTemplate);
+      this.createFileHandler(newFilePath, content);
     } else {
-      this.overrideFileHandler(newFilePath, newAlgorithmFileTemplate);
+      this.overrideFileHandler(newFilePath, content);
     }
+
+    return newFilePath;
   };
 }
