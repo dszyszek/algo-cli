@@ -1,4 +1,5 @@
 import fs from 'fs-extra';
+import { logError } from '../../utils/logger';
 
 export interface ValidatedFilePath {
   fileName: string;
@@ -27,6 +28,20 @@ export class FileSystem {
   }
 
   protected checkIfExist = (path: string): boolean => fs.existsSync(path);
+
+  protected checkIfDirectory = (path: string): boolean | null => {
+    try {
+      const isDirectory: boolean = fs.lstatSync(path).isDirectory();
+      return isDirectory;
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        logError('No such file/directory!');
+      } else {
+        throw Error(e);
+      }
+      return null;
+    }
+  };
 
   protected createFile = (path: string, content: string = ''): void =>
     fs.writeFileSync(path, content);
