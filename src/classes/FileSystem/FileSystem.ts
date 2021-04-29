@@ -64,4 +64,17 @@ export class FileSystem {
       filePath,
     };
   }
+
+  public static isPathRelative(path: string): boolean {
+    return path[0] === '.';
+  }
+
+  public static normalizePath(path: string): string {
+    const isRelative = FileSystem.isPathRelative(path);
+    if (isRelative) {
+      return `${process.cwd()}/${path}`;
+    }
+
+    return path;
+  }
 }
