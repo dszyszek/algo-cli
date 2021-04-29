@@ -7,11 +7,11 @@ export interface ValidatedFilePath {
 }
 
 export class FileSystem {
-  protected importFile = (pathToFile: string): Promise<Function> => {
+  public static importFile = (pathToFile: string): Promise<Function> => {
     return import(pathToFile).then((rawFile) => rawFile.default);
   };
 
-  protected getRawFile(
+  public static getRawFile(
     pathToFile: string,
     encoding: string = 'utf8',
   ): Promise<string> {
@@ -27,9 +27,9 @@ export class FileSystem {
     });
   }
 
-  protected checkIfExist = (path: string): boolean => fs.existsSync(path);
+  public static checkIfExist = (path: string): boolean => fs.existsSync(path);
 
-  protected checkIfDirectory = (path: string): boolean | null => {
+  public static checkIfDirectory = (path: string): boolean | null => {
     try {
       const isDirectory: boolean = fs.lstatSync(path).isDirectory();
       return isDirectory;
@@ -43,12 +43,12 @@ export class FileSystem {
     }
   };
 
-  protected createFile = (path: string, content: string = ''): void =>
+  public static createFile = (path: string, content: string = ''): void =>
     fs.writeFileSync(path, content);
 
-  protected mkdir = (path: string): void => fs.mkdirSync(path);
+  public static mkdir = (path: string): void => fs.mkdirSync(path);
 
-  protected validateFilePath(passedFilePath: string): ValidatedFilePath {
+  public static validateFilePath(passedFilePath: string): ValidatedFilePath {
     let filePath: string;
     let fileName: string = '';
     const filePathSplit = passedFilePath.split('/');

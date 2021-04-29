@@ -6,12 +6,11 @@ import { CLI } from '../../classes/CLI/CLI';
 import { logSuccess, logError, logInfo } from '../../utils/logger';
 import newAlgorithmFileTemplate from '../../templates/new-algorithm-template';
 
-export class FileSystemService extends FileSystem {
+export class FileSystemService {
   private currentFileName: string = '';
   private currentFilePath: string = '';
 
   constructor(passedFilePath?: string, passedFileName?: string) {
-    super();
     if (passedFileName) {
       this.fileName = passedFileName;
     }
@@ -26,9 +25,10 @@ export class FileSystemService extends FileSystem {
   }
 
   public set filePath(passedFilePath: string) {
-    const { fileName, filePath }: ValidatedFilePath = this.validateFilePath(
-      passedFilePath,
-    );
+    const {
+      fileName,
+      filePath,
+    }: ValidatedFilePath = FileSystem.validateFilePath(passedFilePath);
     this.currentFilePath = filePath;
     if (!!fileName) {
       this.fileName = fileName;
@@ -71,7 +71,7 @@ export class FileSystemService extends FileSystem {
     filePath: string,
     algorithmTemplate?: string,
   ): Promise<void> => {
-    this.createFile(filePath, algorithmTemplate);
+    FileSystem.createFile(filePath, algorithmTemplate);
     logSuccess('File generated!');
   };
 
@@ -94,14 +94,14 @@ export class FileSystemService extends FileSystem {
     pathToFile: string,
     fileName: string,
   ): boolean {
-    const fileExist = this.checkIfExist(pathToFile);
+    const fileExist = FileSystem.checkIfExist(pathToFile);
 
     if (!fileExist) {
       logError(`Cannot import - file "${fileName}" doesn't exist`);
       return false;
     }
 
-    const checkIfDirectory = this.checkIfDirectory(pathToFile);
+    const checkIfDirectory = FileSystem.checkIfDirectory(pathToFile);
     if (checkIfDirectory) {
       logError(`Cannot import directory!`);
       return false;
@@ -117,7 +117,7 @@ export class FileSystemService extends FileSystem {
     const isValid = this.validateFileBeforeImport(fullFilePath, fileName);
 
     if (isValid) {
-      return this.getRawFile(fullFilePath);
+      return FileSystem.getRawFile(fullFilePath);
     }
 
     return null;
@@ -130,7 +130,7 @@ export class FileSystemService extends FileSystem {
     const isValid = this.validateFileBeforeImport(fullFilePath, fileName);
 
     if (isValid) {
-      return this.importFile(fullFilePath);
+      return FileSystem.importFile(fullFilePath);
     }
 
     return null;
@@ -141,7 +141,7 @@ export class FileSystemService extends FileSystem {
     const newFileName = await this.getFileName();
     const newFilePath = `${filePath}/${newFileName}.ts`;
 
-    const fileExist = this.checkIfExist(newFilePath);
+    const fileExist = FileSystem.checkIfExist(newFilePath);
 
     if (!fileExist) {
       this.createFileHandler(newFilePath, newAlgorithmFileTemplate);
