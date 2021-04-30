@@ -27,6 +27,10 @@ export default class CLIService {
     this.utilityServiceInstance = new UtilityService();
   }
 
+  private exitFromProcess(exitCode: number = 0) {
+    process.exit(exitCode);
+  }
+
   private async handleMainQuestions(): Promise<void> {
     const { main_options } = await mainOptionsQuestion();
 
@@ -63,9 +67,9 @@ export default class CLIService {
     );
     const qyantityParsed = parseInt(quantityRaw);
 
-    if (qyantityParsed === NaN) {
+    if (isNaN(qyantityParsed)) {
       logError('You must input a number!');
-      throw Error('You must input a number! -- getRandomNumbers()');
+      this.exitFromProcess();
     }
     logInfo('Generating numbers...');
     const randomNumbers: number[] = this.utilityServiceInstance.generateRandomNumbers(
