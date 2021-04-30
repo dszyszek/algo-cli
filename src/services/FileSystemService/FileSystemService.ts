@@ -6,17 +6,32 @@ import { CLI } from '../../classes/CLI/CLI';
 import { logSuccess, logError, logInfo } from '../../utils/logger';
 import newAlgorithmFileTemplate from '../../templates/new-algorithm-template';
 
+interface FileSystemConfig {
+  allowedInputFileExtensions: string[];
+}
+
 export class FileSystemService {
   private currentFileName: string = '';
   private currentFilePath: string = '';
+  private fileSystemConfig: FileSystemConfig = {
+    allowedInputFileExtensions: ['js'],
+  };
 
-  constructor(passedFilePath?: string, passedFileName?: string) {
+  constructor(
+    passedFilePath?: string,
+    passedFileName?: string,
+    passedConfig?: FileSystemConfig,
+  ) {
     if (passedFileName) {
       this.fileName = passedFileName;
     }
 
     if (passedFilePath) {
       this.filePath = passedFilePath;
+    }
+
+    if (passedConfig) {
+      this.fileSystemConfig = passedConfig;
     }
   }
 
@@ -54,6 +69,21 @@ export class FileSystemService {
     }
 
     return fileName;
+  }
+
+  private validateExtension(path: string) {
+    const { allowedInputFileExtensions } = this.fileSystemConfig;
+    const splittedByDot = path.split('.');
+    const extension = path[splittedByDot.length - 1];
+    const passedExtensionAllowed = allowedInputFileExtensions.includes(
+      extension,
+    );
+
+    if (!passedExtensionAllowed) {
+      return false;
+    }
+
+    return true;
   }
 
   private async getFilePath(): Promise<string> {
@@ -105,6 +135,14 @@ export class FileSystemService {
     const checkIfDirectory = FileSystem.checkIfDirectory(pathToFile);
     if (checkIfDirectory) {
       logError(`Cannot import directory!`);
+      return false;
+    }
+
+    const validateExtension = this.validateExtension(pathToFile);
+    if (!validateExtension) {
+      logError(
+        `File of that extension is not allowed! (allowed values: ${this.fileSystemConfig.allowedInputFileExtensions})`,
+      );
       return false;
     }
 
