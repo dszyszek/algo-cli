@@ -15,6 +15,10 @@ export async function algorithmPayloadQuestion(): Promise<AlgorithmPayloadRespon
       name: 'Write by yourself in console',
       value: AlgorithmPayloadAvailableOptions.YOURSELF,
     },
+    {
+      name: 'Generate on fly',
+      value: AlgorithmPayloadAvailableOptions.GENERATE_ON_FLY,
+    },
   ];
 
   return inquirer.prompt({
