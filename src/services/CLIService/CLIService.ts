@@ -1,5 +1,6 @@
 import { CLI } from '../../classes/CLI';
 import { ICLI } from '../../classes/CLI/types';
+import { IUtility } from '../../classes/Utility/types';
 import { mainOptionsQuestion } from '../../questions/main-options';
 import { AlgorithmPossibleActions } from '../../models/algorithm-actions';
 import { CompareAlgorithmsMain } from '../../models/algorithm-compare';
@@ -12,16 +13,18 @@ import { parseToIntArray } from '../../utils/number';
 import { algorithmComparePayloadQuestion } from '../../questions/compare-algorithms';
 import { CompareAlborithmsBy } from '../../models/algorithm-compare';
 import { AlgorithmType } from '../../classes/Algorithm/types';
-import { logError } from '../../utils/logger';
+import { logError, logInfo } from '../../utils/logger';
 import { UtilityService } from '../UtilityService/UtilityService';
 import { UtilityPossibleActionValues } from '../../models/utility-actions';
 import { utilityActionsQuestion } from '../../questions/utility-actions';
 
 export default class CLIService {
   private cliInstance: ICLI;
+  private utilityServiceInstance: UtilityService;
 
   constructor() {
     this.cliInstance = new CLI();
+    this.utilityServiceInstance = new UtilityService();
   }
 
   private async handleMainQuestions(): Promise<void> {
@@ -54,6 +57,24 @@ export default class CLIService {
     new FileSystemService(file_path, file_name).create();
   }
 
+  private async getRandomNumbers(): Promise<number[]> {
+    const quantityRaw: string = await CLI.inputQuestion(
+      'How many random numbers do you want?',
+    );
+    const qyantityParsed = parseInt(quantityRaw);
+
+    if (qyantityParsed === NaN) {
+      logError('You must input a number!');
+      throw Error('You must input a number! -- getRandomNumbers()');
+    }
+    logInfo('Generating numbers...');
+    const randomNumbers: number[] = this.utilityServiceInstance.generateRandomNumbers(
+      qyantityParsed,
+    );
+
+    return randomNumbers;
+  }
+
   private async handleAlgorithmPayload(
     algorithmOptions: AlgorithmPayloadAvailableOptions,
   ): Promise<number[] | null> {
@@ -80,6 +101,13 @@ export default class CLIService {
 
         algorithmPayload = parseToIntArray(rawNumbers);
         break;
+      case AlgorithmPayloadAvailableOptions.GENERATE_ON_FLY:
+        const randomNumbers = await this.getRandomNumbers();
+        algorithmPayload = randomNumbers;
+        break;
+      default:
+        logError('algorithmPayload is empty!');
+        algorithmPayload = [];
     }
 
     return algorithmPayload;
@@ -185,19 +213,7 @@ export default class CLIService {
 
     switch (utility_action) {
       case UtilityPossibleActionValues.CREATE_RANDOM_NUMBERS_FILE:
-        const quantityRaw: string = await CLI.inputQuestion(
-          'How many random numbers do you want?',
-        );
-        const qyantityParsed = parseInt(quantityRaw);
-
-        if (qyantityParsed === NaN) {
-          logError('You must input a number!');
-          return;
-        }
-        const utilityServiceInstance = new UtilityService();
-        const randomNumbers: number[] = utilityServiceInstance.generateRandomNumbers(
-          qyantityParsed,
-        );
+        const randomNumbers: number[] = await this.getRandomNumbers();
         const randomNumbersStringified: string = randomNumbers.join(',');
         const newFilePath = await CLI.filePathQuestion(
           'Input path to the new file',
