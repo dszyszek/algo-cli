@@ -74,7 +74,7 @@ export class FileSystemService {
   private validateExtension(path: string) {
     const { allowedInputFileExtensions } = this.fileSystemConfig;
     const splittedByDot = path.split('.');
-    const extension = path[splittedByDot.length - 1];
+    const extension = splittedByDot[splittedByDot.length - 1];
     const passedExtensionAllowed = allowedInputFileExtensions.includes(
       extension,
     );
