@@ -27,10 +27,6 @@ export default class CLIService {
     this.utilityServiceInstance = new UtilityService();
   }
 
-  private exitFromProcess(exitCode: number = 0) {
-    process.exit(exitCode);
-  }
-
   private async handleMainQuestions(): Promise<void> {
     const { main_options } = await mainOptionsQuestion();
 
@@ -61,24 +57,6 @@ export default class CLIService {
     new FileSystemService(file_path, file_name).create();
   }
 
-  private async getRandomNumbers(): Promise<number[]> {
-    const quantityRaw: string = await CLI.inputQuestion(
-      'How many random numbers do you want?',
-    );
-    const qyantityParsed = parseInt(quantityRaw);
-
-    if (isNaN(qyantityParsed)) {
-      logError('You must input a number!');
-      this.exitFromProcess();
-    }
-    logInfo('Generating numbers...');
-    const randomNumbers: number[] = this.utilityServiceInstance.generateRandomNumbers(
-      qyantityParsed,
-    );
-
-    return randomNumbers;
-  }
-
   private async handleAlgorithmPayload(
     algorithmOptions: AlgorithmPayloadAvailableOptions,
   ): Promise<number[] | null> {
@@ -106,7 +84,7 @@ export default class CLIService {
         algorithmPayload = parseToIntArray(rawNumbers);
         break;
       case AlgorithmPayloadAvailableOptions.GENERATE_ON_FLY:
-        const randomNumbers = await this.getRandomNumbers();
+        const randomNumbers = await this.utilityServiceInstance.getRandomNumbers();
         algorithmPayload = randomNumbers;
         break;
       default:
@@ -217,7 +195,7 @@ export default class CLIService {
 
     switch (utility_action) {
       case UtilityPossibleActionValues.CREATE_RANDOM_NUMBERS_FILE:
-        const randomNumbers: number[] = await this.getRandomNumbers();
+        const randomNumbers: number[] = await this.utilityServiceInstance.getRandomNumbers();
         const randomNumbersStringified: string = randomNumbers.join(',');
         const newFilePath = await CLI.filePathQuestion(
           'Input path to the new file',

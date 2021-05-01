@@ -9,6 +9,10 @@ export class CLI implements ICLI {
     return figlet.textSync(text, { horizontalLayout: 'full' });
   }
 
+  public static exitFromProcess(exitCode: number = 0) {
+    process.exit(exitCode);
+  }
+
   public displayBanner = (): void => {
     const transformedText = this.figletify(ConsoleMessage.TITLE);
     const magentaTitle = magenta(transformedText);
