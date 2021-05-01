@@ -1,4 +1,4 @@
-import { Command as Commander } from 'commander';
+import { Command as Commander, Option } from 'commander';
 import { ICommand } from './types';
 import { TCommand } from '../../models/commander';
 
@@ -14,7 +14,14 @@ export class Command implements ICommand {
 
   public set options(options: TCommand[]) {
     options.forEach((opt) => {
-      this.commanderInstance.option(...opt);
+      const { option, choices } = opt;
+
+      if (choices) {
+        const newOption = new Option(...option).choices(choices);
+        this.commanderInstance.addOption(newOption);
+      } else {
+        this.commanderInstance.option(...option);
+      }
     });
   }
 
