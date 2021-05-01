@@ -1,6 +1,5 @@
 import { CLI } from '../../classes/CLI';
 import { ICLI } from '../../classes/CLI/types';
-import { IUtility } from '../../classes/Utility/types';
 import { mainOptionsQuestion } from '../../questions/main-options';
 import { AlgorithmPossibleActions } from '../../models/algorithm-actions';
 import { CompareAlgorithmsMain } from '../../models/algorithm-compare';
@@ -13,7 +12,7 @@ import { parseToIntArray } from '../../utils/number';
 import { algorithmComparePayloadQuestion } from '../../questions/compare-algorithms';
 import { CompareAlborithmsBy } from '../../models/algorithm-compare';
 import { AlgorithmType } from '../../classes/Algorithm/types';
-import { logError, logInfo } from '../../utils/logger';
+import { logError } from '../../utils/logger';
 import { UtilityService } from '../UtilityService/UtilityService';
 import { UtilityPossibleActionValues } from '../../models/utility-actions';
 import { utilityActionsQuestion } from '../../questions/utility-actions';
