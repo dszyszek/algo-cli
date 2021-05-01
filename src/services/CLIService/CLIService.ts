@@ -16,14 +16,17 @@ import { logError } from '../../utils/logger';
 import { UtilityService } from '../UtilityService/UtilityService';
 import { UtilityPossibleActionValues } from '../../models/utility-actions';
 import { utilityActionsQuestion } from '../../questions/utility-actions';
+import { CommandService } from '../CommandService/CommandService';
 
 export default class CLIService {
   private cliInstance: ICLI;
   private utilityServiceInstance: UtilityService;
+  private commandService: CommandService;
 
   constructor() {
     this.cliInstance = new CLI();
     this.utilityServiceInstance = new UtilityService();
+    this.commandService = new CommandService(process.argv);
   }
 
   private async handleMainQuestions(): Promise<void> {
@@ -209,6 +212,8 @@ export default class CLIService {
   }
 
   public start = (): void => {
+    const commandOptions = this.commandService.getCommands();
+    console.log(commandOptions, 'commandOptions');
     this.cliInstance.displayBanner();
     this.handleMainQuestions();
   };
