@@ -6,7 +6,7 @@ import { CLI } from '../../classes/CLI/CLI';
 import { logSuccess, logError, logInfo } from '../../utils/logger';
 import newAlgorithmFileTemplate from '../../templates/new-algorithm-template';
 
-interface FileSystemConfig {
+export interface FileSystemConfig {
   allowedInputFileExtensions: string[];
 }
 
