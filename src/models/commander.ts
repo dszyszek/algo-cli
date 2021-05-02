@@ -1,3 +1,8 @@
+import { AlgorithmPossibleActions } from '../models/algorithm-actions';
+import { CompareAlgorithmsMain } from '../models/algorithm-compare';
+import { UtilityActionMain } from '../models/utility-actions';
+
+export type SelectModeAnswer = 'create' | 'run' | 'compare' | 'utility';
 export type TCommandOption = [string, string];
 export type TCommand = {
   option: TCommandOption;
@@ -6,10 +11,7 @@ export type TCommand = {
 
 export const COMMAND_OPTIONS: TCommand[] = [
   {
-    option: [
-      '-m, --mode  <mode>',
-      'Compare algorithms. Allowed values: ["create", "run", "compare", "utility"]',
-    ],
+    option: ['-m, --mode  <mode>', 'Compare algorithms.'],
     choices: ['create', 'run', 'compare', 'utility'],
   },
   {
@@ -23,15 +25,12 @@ export const COMMAND_OPTIONS: TCommand[] = [
   {
     option: [
       '-b, --compare_by <compare_by>',
-      'Select by what you want to compare algorithms. Allowed options: ["performance"]',
+      'Select by what you want to compare algorithms.',
     ],
     choices: ['performance'],
   },
   {
-    option: [
-      '-f --from <from>',
-      'Input source of algorithm payload file. Allowed options: ["file", "yourself", "generate"]',
-    ],
+    option: ['-f --from <from>', 'Input source of algorithm payload file.'],
     choices: ['file', 'yourself', 'generate'],
   },
   {
@@ -51,7 +50,7 @@ export const COMMAND_OPTIONS: TCommand[] = [
   {
     option: [
       '-U, --utility_action <utility_action>',
-      'Select utility action you want to do. Allowed actions: ["generate_numbers"]',
+      'Select utility action you want to do.',
     ],
     choices: ['generate_numbers'],
   },
@@ -59,3 +58,10 @@ export const COMMAND_OPTIONS: TCommand[] = [
 
 export const COMMANDER_DESCRIPTION: string =
   'Create/run/compare algorithms with ease';
+
+export const COMMAND_TO_ACTION_MAP = {
+  create: AlgorithmPossibleActions.CREATE_ALGORITHM,
+  run: AlgorithmPossibleActions.RUN_ALGORITHM,
+  compare: CompareAlgorithmsMain.COMPARE_ALGORITHMS,
+  utility: UtilityActionMain.UTILITY_ACTIONS,
+};
