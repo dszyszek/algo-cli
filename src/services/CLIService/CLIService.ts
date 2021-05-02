@@ -1,26 +1,21 @@
 import { CLI } from '../../classes/CLI';
 import { ICLI } from '../../classes/CLI/types';
-import { mainOptionsQuestion } from '../../questions/main-options';
 import { AlgorithmPossibleActions } from '../../models/algorithm-actions';
 import { CompareAlgorithmsMain } from '../../models/algorithm-compare';
 import { UtilityActionMain } from '../../models/utility-actions';
 import { AlgorithmPayloadAvailableOptions } from '../../models/algorithm-payload-options';
-import { FileSystemService } from '../../services/FileSystemService/FileSystemService';
-import { algorithmPayloadQuestion } from '../../questions/algorithm-payload-options';
+import {
+  FileSystemService,
+  FileSystemConfig,
+} from '../../services/FileSystemService/FileSystemService';
 import { AlgorithmService } from '../AlgorithmService/AlgorithmService';
 import { parseToIntArray } from '../../utils/number';
-import { algorithmComparePayloadQuestion } from '../../questions/compare-algorithms';
 import { CompareAlborithmsBy } from '../../models/algorithm-compare';
 import { AlgorithmType } from '../../classes/Algorithm/types';
 import { logError } from '../../utils/logger';
 import { UtilityService } from '../UtilityService/UtilityService';
 import { UtilityPossibleActionValues } from '../../models/utility-actions';
-import { utilityActionsQuestion } from '../../questions/utility-actions';
 import { CommandService } from '../CommandService/CommandService';
-import {
-  COMMAND_TO_ACTION_MAP,
-  SelectModeAnswer,
-} from '../../models/commander';
 
 export default class CLIService {
   private cliInstance: ICLI;
@@ -33,15 +28,8 @@ export default class CLIService {
     this.commandService = new CommandService(process.argv);
   }
 
-  private async handleMainQuestions(mode?: SelectModeAnswer): Promise<void> {
-    let selectedMode: string;
-
-    if (mode) {
-      selectedMode = COMMAND_TO_ACTION_MAP[mode];
-    } else {
-      const { main_options } = await mainOptionsQuestion();
-      selectedMode = main_options;
-    }
+  private async handleMainQuestions(): Promise<void> {
+    const selectedMode: string = await this.commandService.getMainMode();
 
     switch (selectedMode) {
       case AlgorithmPossibleActions.CREATE_ALGORITHM:
@@ -60,10 +48,10 @@ export default class CLIService {
   }
 
   private async handleCreateAlgorithm(): Promise<void> {
-    const file_name = await CLI.fileNameQuestion(
+    const file_name = await this.commandService.getFileName(
       'Input name of the new algorithm file',
     );
-    const file_path = await CLI.filePathQuestion(
+    const file_path = await this.commandService.getOutputPath(
       'Input path to the new algorithm file',
     );
 
@@ -72,12 +60,19 @@ export default class CLIService {
 
   private async handleAlgorithmPayload(
     algorithmOptions: AlgorithmPayloadAvailableOptions,
+    fileSystemServiceConfig: FileSystemConfig | undefined = undefined,
   ): Promise<number[] | null> {
     let algorithmPayload: number[];
     switch (algorithmOptions) {
       case AlgorithmPayloadAvailableOptions.FROM_FILE:
-        const path_to_file = await CLI.filePathQuestion('Input path to file');
-        const fileClass = new FileSystemService(path_to_file);
+        const path_to_file = await this.commandService.getFilePayload(
+          'Input path to file',
+        );
+        const fileClass = new FileSystemService(
+          path_to_file,
+          undefined,
+          fileSystemServiceConfig,
+        );
         const rawFileContent = await fileClass.getContent();
 
         if (!rawFileContent) {
@@ -86,18 +81,17 @@ export default class CLIService {
         algorithmPayload = parseToIntArray(rawFileContent);
         break;
       case AlgorithmPayloadAvailableOptions.YOURSELF:
-        const rawNumbers = await CLI.inputQuestion(
+        algorithmPayload = await this.commandService.getNumbersPayload(
           'Input numbers list (comma separated!)',
         );
-
-        if (!rawNumbers) {
-          return null;
-        }
-
-        algorithmPayload = parseToIntArray(rawNumbers);
         break;
       case AlgorithmPayloadAvailableOptions.GENERATE_ON_FLY:
-        const randomNumbers = await this.utilityServiceInstance.getRandomNumbers();
+        const quantity: number = await this.commandService.getQuantity(
+          'How many random numbers do you want?',
+        );
+        const randomNumbers = await this.utilityServiceInstance.getRandomNumbers(
+          quantity,
+        );
         algorithmPayload = randomNumbers;
         break;
       default:
@@ -114,13 +108,18 @@ export default class CLIService {
       algo: new Function(),
       name: '',
     };
+    const fileSystemConfig: FileSystemConfig = {
+      allowedInputFileExtensions: ['csv', 'js'],
+    };
 
     // get algorithm
-    const file_path = await CLI.filePathQuestion(
+    const file_path = await this.commandService.getInputPath(
       'Input path to the algorithm file',
     );
     const algorithmFSService: FileSystemService = new FileSystemService(
       file_path,
+      undefined,
+      fileSystemConfig,
     );
     const algorithm: Function | null = await algorithmFSService.importFromFile();
     const algorithmName = algorithmFSService.fileName;
@@ -133,11 +132,12 @@ export default class CLIService {
     readyAlgorithm.name = algorithmName;
 
     // ask for payload (file or input array)
-    const { algorithm_payload_options } = await algorithmPayloadQuestion();
+    const algorithm_payload_options = await this.commandService.getSource();
 
     // get algo payload
     const payload = await this.handleAlgorithmPayload(
       algorithm_payload_options,
+      fileSystemConfig,
     );
     if (!payload) {
       return;
@@ -154,29 +154,37 @@ export default class CLIService {
   }
 
   private async handleAlgorithmCompare(): Promise<void> {
-    const {
-      algorithm_compare_payload,
-    } = await algorithmComparePayloadQuestion();
+    const algorithm_compare_payload = await this.commandService.getCompareAlgorithmBy();
+    const fileSystemConfig: FileSystemConfig = {
+      allowedInputFileExtensions: ['csv', 'js'],
+    };
 
     switch (algorithm_compare_payload) {
       case CompareAlborithmsBy.COMPARE_BY_PERFORMANCE:
         let algorithmPayload: number[];
         const algorithms: AlgorithmType[] = [];
 
-        const { algorithm_payload_options } = await algorithmPayloadQuestion();
+        const algorithm_payload_options = await this.commandService.getSource();
 
         const payload = await this.handleAlgorithmPayload(
           algorithm_payload_options,
+          fileSystemConfig,
         );
         if (!payload) {
           return;
         }
         algorithmPayload = payload;
 
-        const pathsToFilesRaw = await CLI.filePathQuestion(
+        const pathsToFilesRaw = await this.commandService.getInputPath(
           'Input paths to algorithm files (comma separated)',
         );
         const pathsToFiles = pathsToFilesRaw.split(',');
+
+        if (pathsToFiles.length !== 2) {
+          logError('You need to put exactly 2 algorithms paths to compare!');
+          CLI.exitFromProcess();
+        }
+
         const FSService = new FileSystemService();
 
         for (let i = 0; i < pathsToFiles.length; i++) {
@@ -204,16 +212,27 @@ export default class CLIService {
   }
 
   private async handleUtilityActions(): Promise<void> {
-    const { utility_action } = await utilityActionsQuestion();
+    const utility_action = await this.commandService.getUtilityAction();
 
     switch (utility_action) {
       case UtilityPossibleActionValues.CREATE_RANDOM_NUMBERS_FILE:
-        const randomNumbers: number[] = await this.utilityServiceInstance.getRandomNumbers();
+        const quantity: number = await this.commandService.getQuantity(
+          'How many random numbers do you want?',
+        );
+        const randomNumbers: number[] = await this.utilityServiceInstance.getRandomNumbers(
+          quantity,
+        );
         const randomNumbersStringified: string = randomNumbers.join(',');
-        const newFilePath = await CLI.filePathQuestion(
+        const newFilePath = await this.commandService.getOutputPath(
           'Input path to the new file',
         );
-        const fileSystemServiceInstance = new FileSystemService(newFilePath);
+        const newFileName = await this.commandService.getFileName(
+          'Input name of the new file',
+        );
+        const fileSystemServiceInstance = new FileSystemService(
+          newFilePath,
+          newFileName,
+        );
         fileSystemServiceInstance.create(randomNumbersStringified, 'csv');
 
         break;
@@ -223,8 +242,8 @@ export default class CLIService {
   }
 
   public start = (): void => {
-    const commandOptions = this.commandService.getCommands();
+    this.commandService.getCommands();
     this.cliInstance.displayBanner();
-    this.handleMainQuestions(commandOptions.mode);
+    this.handleMainQuestions();
   };
 }
