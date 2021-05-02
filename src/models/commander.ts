@@ -1,7 +1,3 @@
-import { AlgorithmPossibleActions } from '../models/algorithm-actions';
-import { CompareAlgorithmsMain } from '../models/algorithm-compare';
-import { UtilityActionMain } from '../models/utility-actions';
-
 export type SelectModeAnswer = 'create' | 'run' | 'compare' | 'utility';
 export type TCommandOption = [string, string];
 export type TCommand = {
@@ -30,7 +26,7 @@ export const COMMAND_OPTIONS: TCommand[] = [
     choices: ['performance'],
   },
   {
-    option: ['-f --from <source>', 'Input source of algorithm payload file.'],
+    option: ['-s --source <source>', 'Input source of algorithm payload file.'],
     choices: ['file', 'yourself', 'generate'],
   },
   {
@@ -72,10 +68,3 @@ export const COMMAND_OPTIONS: TCommand[] = [
 
 export const COMMANDER_DESCRIPTION: string =
   'Create/run/compare algorithms with ease';
-
-export const COMMAND_TO_ACTION_MAP = {
-  create: AlgorithmPossibleActions.CREATE_ALGORITHM,
-  run: AlgorithmPossibleActions.RUN_ALGORITHM,
-  compare: CompareAlgorithmsMain.COMPARE_ALGORITHMS,
-  utility: UtilityActionMain.UTILITY_ACTIONS,
-};
