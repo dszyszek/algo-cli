@@ -1,6 +1,6 @@
 export enum AlgorithmPossibleActions {
-  CREATE_ALGORITHM = 'CREATE_ALGORITHM',
-  RUN_ALGORITHM = 'RUN_ALGORITHM',
+  CREATE_ALGORITHM = 'create',
+  RUN_ALGORITHM = 'run',
 }
 export interface AlgorithmAction {
   name: string;

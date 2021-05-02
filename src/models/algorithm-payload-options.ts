@@ -1,5 +1,5 @@
 export enum AlgorithmPayloadAvailableOptions {
-  FROM_FILE = 'FROM_FILE',
-  YOURSELF = 'YOURSELF',
-  GENERATE_ON_FLY = 'GENERATE_ON_FLY',
+  FROM_FILE = 'file',
+  YOURSELF = 'yourself',
+  GENERATE_ON_FLY = 'generate',
 }

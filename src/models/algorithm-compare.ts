@@ -1,9 +1,9 @@
 export enum CompareAlborithmsBy {
-  COMPARE_BY_PERFORMANCE = 'COMPARE_BY_PERFORMANCE',
+  COMPARE_BY_PERFORMANCE = 'performance',
 }
 
 export enum CompareAlgorithmsMain {
-  COMPARE_ALGORITHMS = 'COMPARE_ALGORITHMS',
+  COMPARE_ALGORITHMS = 'compare',
 }
 
 export interface CompareAlgorithms {
