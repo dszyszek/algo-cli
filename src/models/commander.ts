@@ -30,7 +30,7 @@ export const COMMAND_OPTIONS: TCommand[] = [
     choices: ['performance'],
   },
   {
-    option: ['-f --from <from>', 'Input source of algorithm payload file.'],
+    option: ['-f --from <source>', 'Input source of algorithm payload file.'],
     choices: ['file', 'yourself', 'generate'],
   },
   {
@@ -42,17 +42,31 @@ export const COMMAND_OPTIONS: TCommand[] = [
   },
   {
     option: [
-      '-q, --quantity <quantity>',
+      '-q, --quantity <number>',
       'Quantity of random numbers to generate',
     ],
     choices: null,
   },
   {
     option: [
-      '-U, --utility_action <utility_action>',
+      '-U, --utility_action <action>',
       'Select utility action you want to do.',
     ],
     choices: ['generate_numbers'],
+  },
+  {
+    option: [
+      '-np, --numbers_payload <payload>',
+      'Numbers to input as payload for algorithm (type in; comma separated)',
+    ],
+    choices: null,
+  },
+  {
+    option: [
+      '-fp, --file_payload <path>',
+      'Numbers to input as payload for algorithm (from file)',
+    ],
+    choices: null,
   },
 ];
 
