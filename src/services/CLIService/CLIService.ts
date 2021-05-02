@@ -17,6 +17,10 @@ import { UtilityService } from '../UtilityService/UtilityService';
 import { UtilityPossibleActionValues } from '../../models/utility-actions';
 import { utilityActionsQuestion } from '../../questions/utility-actions';
 import { CommandService } from '../CommandService/CommandService';
+import {
+  COMMAND_TO_ACTION_MAP,
+  SelectModeAnswer,
+} from '../../models/commander';
 
 export default class CLIService {
   private cliInstance: ICLI;
@@ -29,10 +33,17 @@ export default class CLIService {
     this.commandService = new CommandService(process.argv);
   }
 
-  private async handleMainQuestions(): Promise<void> {
-    const { main_options } = await mainOptionsQuestion();
+  private async handleMainQuestions(mode?: SelectModeAnswer): Promise<void> {
+    let selectedMode: string;
 
-    switch (main_options) {
+    if (mode) {
+      selectedMode = COMMAND_TO_ACTION_MAP[mode];
+    } else {
+      const { main_options } = await mainOptionsQuestion();
+      selectedMode = main_options;
+    }
+
+    switch (selectedMode) {
       case AlgorithmPossibleActions.CREATE_ALGORITHM:
         this.handleCreateAlgorithm();
         break;
@@ -213,8 +224,7 @@ export default class CLIService {
 
   public start = (): void => {
     const commandOptions = this.commandService.getCommands();
-    console.log(commandOptions, 'commandOptions');
     this.cliInstance.displayBanner();
-    this.handleMainQuestions();
+    this.handleMainQuestions(commandOptions.mode);
   };
 }
